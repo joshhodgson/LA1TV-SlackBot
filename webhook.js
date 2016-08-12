@@ -32,6 +32,8 @@ function webhook() {
 }
 
   function parser(payload) {
+    that.emit(payload.eventId, payload);
+    
     that.emit('data', payload);
     console.log(payload);
     if (payload.eventId == 'mediaItem.live') {
