@@ -32,7 +32,7 @@ bot.on('start', function() {
   sarah = new Sarah(bot);
 
   //Begin Webhook integration
-  webhook.on('mediaItem.vodAvailable live notLive showOver', function(payload) {
+  webhook.on('vodAvailable live notLive showOver', function(payload) {
     website.apiRequest("mediaItems/" + payload.payload.id, function(data) {
       var message = "Something is happenening on the website with " + data.data.mediaItem.name + " in " + data.data.playlists[0].name + ". Watch it at " + data.data.mediaItem.siteUrl + " .... woof!";
       clifford.postToChannel('streammonitoring', message, {
