@@ -1,4 +1,8 @@
-var config = require('./config.json');
+var config = {
+    slackapikey: process.env.slackapikey,
+    la1apikey: process.env.la1apikey,
+    hookpassword: process.env.hookpassword
+}
 
 
 var SlackBot = require('slackbots');
@@ -20,8 +24,8 @@ var stephen,
 
 
 var bot = new SlackBot({
-  token: config.apikey,
-  name: 'Clifford'
+    token: config.slackapikey,
+    name: 'Clifford'
 });
 
 bot.on('start', function() {
@@ -33,7 +37,7 @@ bot.on('start', function() {
 
   //Begin Webhook integration
   webhook.on("vod", function(payload) {
-    website.apiRequest("mediaItems/" + payload.payload.id, function(data) {
+    website.apiRequest("mediaItems/" + payload.payload.id, config.la1apikey, function(data) {
       var message = data.data.mediaItem.name + " in " + data.data.playlists[0].name + " now has VOD. Watch it at " + data.data.mediaItem.siteUrl + " .... woof!";
       clifford.postToChannel('streammonitoring', message, {
         as_user: true
@@ -43,7 +47,7 @@ bot.on('start', function() {
 
   //Begin Webhook integration
   webhook.on("live", function(payload) {
-    website.apiRequest("mediaItems/" + payload.payload.id, function(data) {
+    website.apiRequest("mediaItems/" + payload.payload.id, config.la1apikey,  function(data) {
       var message = data.data.mediaItem.name + " in " + data.data.playlists[0].name + " is now live. Watch it at " + data.data.mediaItem.siteUrl + " .... woof!";
       clifford.postToChannel('streammonitoring', message, {
         as_user: true
@@ -53,7 +57,7 @@ bot.on('start', function() {
 
   //Begin Webhook integration
   webhook.on("notLive", function(payload) {
-    website.apiRequest("mediaItems/" + payload.payload.id, function(data) {
+    website.apiRequest("mediaItems/" + payload.payload.id, config.la1apikey,  function(data) {
       var message = data.data.mediaItem.name + " in " + data.data.playlists[0].name + " is no longer live. " + data.data.mediaItem.siteUrl + " .... woof!";
       clifford.postToChannel('streammonitoring', message, {
         as_user: true
@@ -63,7 +67,7 @@ bot.on('start', function() {
 
   //Begin Webhook integration
   webhook.on("showOver", function(payload) {
-    website.apiRequest("mediaItems/" + payload.payload.id, function(data) {
+    website.apiRequest("mediaItems/" + payload.payload.id,  config.la1apikey, function(data) {
       var message = data.data.mediaItem.name + " in " + data.data.playlists[0].name + " has now finished. Watch it at " + data.data.mediaItem.siteUrl + " .... woof!";
       clifford.postToChannel('streammonitoring', message, {
         as_user: true
@@ -87,7 +91,7 @@ bot.on('start', function() {
     cronTime: '00 00 13 * * *',
     onTick: function() {
       console.log("Looking for media items missing vod...");
-      website.apiRequest("mediaItems?sortMode=SCHEDULED_PUBLISH_TIME&sortDirection=DESC&limit=100", function(data) {
+      website.apiRequest("mediaItems?sortMode=SCHEDULED_PUBLISH_TIME&sortDirection=DESC&limit=100", config.la1apikey,  function(data) {
         var needVod = data.data.mediaItems.filter(function(mediaItem) {
           var shouldHaveVod =
             // live stream ended and marked as being recorded
